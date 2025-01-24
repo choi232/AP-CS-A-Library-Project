@@ -1,120 +1,132 @@
+import java.io.File;  // Import the File class
+import java.io.FileNotFoundException;  // Import this class to handle errors
+import java.util.ArrayList; // Import the Scanner class to read text files
+import java.util.Scanner; //Import Collections for sorting function
+
+public class ReadFile {
+  public static void main(String[] args) {
+	//ArrayList Creation
+    ArrayList<Integer> studentBarcodes = new ArrayList<Integer>();
+    ArrayList<ArrayList<String>> listTwo = new ArrayList<ArrayList<String>>();
+    ArrayList<Integer> libraryStudentBarcodes = new ArrayList<Integer>();
+    try {
+      File fileOne = new File("StudentBarcodeIDS.csv");
+      File fileTwo = new File("library.txt");
+      Scanner scanOne = new Scanner(fileOne);
+      Scanner scanTwo = new Scanner(fileTwo);
+      boolean isFirstLine = true;
+      //Loop through all data in csv
+      while (scanOne.hasNextLine()) {
+        String dataOne = scanOne.nextLine();
+        if(isFirstLine){
+          dataOne = scanOne.nextLine();
+          isFirstLine = false;
+        }
+        //Cast String to Integer Wrapper Class
+        studentBarcodes.add(Integer.parseInt(dataOne));
+      }
+      scanOne.close();
+      isFirstLine = true;
+      //Loop through all data in csv
+      while (scanTwo.hasNextLine()) {
+        String dataTwo = scanTwo.nextLine();
+        if(isFirstLine){
+          dataTwo = scanTwo.nextLine();
+          isFirstLine = false;
+        }
+        //Cast String to Integer Wrapper Class
+        libraryStudentBarcodes.add(Integer.parseInt(dataTwo));
+      }
+      int row = 0;
+      while (scanTwo.hasNextLine()) {
+        listTwo.add(new ArrayList<String>());
+        String dataTwo = scanTwo.nextLine();
+        for(int i = 0, len = dataTwo.length(), lastIndex = 0; i < len; i++){
+          if(dataTwo.charAt(i) == '\t'){
+            listTwo.get(row).add(dataTwo.substring(lastIndex, i));
+            lastIndex = i+1;
+          }
+          else if(i == len-1){
+            listTwo.get(row).add(dataTwo.substring(lastIndex));
+          }
+        }
+        row++;
+      }
+      scanTwo.close();
+    } 
+    catch (FileNotFoundException e) {
+      System.out.println("An error occurred.");
+      e.printStackTrace();
+    }
+    catch(NumberFormatException e){
+      System.out.println("Not a valid integer: " + e);
+    }
+    
+    for(int i = 0; i < libraryStudentBarcodes.size(); i++){
+	  System.out.println(libraryStudentBarcodes.get(i));
+    }
+
 /*
-Author: Mikael
+    //Generate User Input for Search Value
+    Scanner scan = new Scanner(System.in);
+    System.out.print("Please enter a number to search for in the dataset: ");
 
-Purpose: to build a board for battleship
+    //Loop to ensure user enters a proper integer value for search value
+    int search;
+    while(true){
+      try {
+        search = Integer.parseInt(scan.nextLine());
+        break;
+      } 
+      catch (NumberFormatException e) {
+        System.out.print("Enter a valid integer to search: ");
+      }
+    }
+    
+    System.out.println();
+    scan.close();
 
-2 boards letters down the side and numbers across the top (10x10 board)
-5 different ship types
-Carrier has 5 pegs
-2 colored set of pets
+    //need to imagine an imaginary array of possible values which shrinks as we guess values in binary search
+
+    Collections.sort(listOne); //sort array
+    int lowIndex = 0; //lower bound of possible values
+    int highIndex = listOne.size()-1; //upper bound of possible values
+    boolean isFound = false; //bool flag for if searching value is not in data set
+    int middle, guess, counter = 0;
+    while(highIndex - lowIndex + 1 > 0){ //size of array is greater than zero
+      counter++;
+      middle = lowIndex + (highIndex - lowIndex)/2; //set middle to half of possible array plus current lower bound
+      guess = listOne.get(middle);
+
+      //Verbose print commands to show processing
+      System.out.println("Iteration #" + counter); //implementation of counter for search length
+      System.out.print("Middle Index: " + middle);
+      System.out.println("  Middle Value: " + guess);
+      System.out.println("lowIndex & highIndex Range: (" + lowIndex + ", " + highIndex + ")\n");
+
+      //check if guess is right
+      if(guess == search){
+        System.out.println("Found: " + guess);
+        isFound = true;
+        break;
+      }
+
+      //guess too high then adjust upper bound
+      else if(guess > search){
+        highIndex = middle - 1;
+      }
+
+      //guess too low then adjust lower bound
+      else if(guess < search){
+        lowIndex = middle + 1;
+      }
+    }
+
+    //Handling if inputted number is not in csv
+    if(!isFound) System.out.println("Not Found");
+
 */
-import java.util.Scanner;
-public class Board {
-	
-	char[][] ships;
-	char[][] guess;
-	
-	public Board(){
-		ships = new char[10][10];
-		guess = new char[10][10];
-		setBoard();
-	}
-      
-	public void setBoard(){
-		for (int row = 0; row < 10; row++){
-			for (int col = 0; col < 10; col++){
-				ships[row][col] = '.';
-				guess[row][col] = '.';
-			}
-		}
-		
-	}
-	/*
-	function checkShip takes two int parameters (row, col) as well as board object and returns true if there is a ship at that index and false if not
-	 */
-	public boolean checkShip(char[][] board, int row, int col){ //chose to use 'S' to signify a ship
-		if(board[row][col] == 'S'){ //checks if board has a ship ('S') there it returns true
-			return true;
-		}
-		return false; //else return false
-	}
-	
-	
-	/*
-	function printBoard returns no value and takes no parameters but prints out the current state of the board
-	*/
-	public void printBoard(){ //if you name the method toString it will not allow you to run it since it would be overriding toString from String library so I called it printBoard
-		int letter = 65;
-		System.out.println("  0 1 2 3 4 5 6 7 8 9"); //header for columns also used 0-9 instead of 0-10 otherwise there will be an uneven spacing
-		//iterate through 2d array and print
-		for(int r = 0; r < 10; r++, letter++){ //increment both r and letter at same time in for loop
-			System.out.printf("%c ", letter);//print out side header of letters
-			for(int c = 0; c < 10; c++){
-				System.out.print(guess[r][c] + " ");//access 2d array and print individual value
-			}
-			System.out.println(); //print \n to create line break between each row
-		}
-		letter = 65;
-		System.out.println("  0 1 2 3 4 5 6 7 8 9"); //header for columns also used 0-9 instead of 0-10 otherwise there will be an uneven spacing
-		//iterate through 2d array and print
-		for(int r = 0; r < 10; r++, letter++){ //increment both r and letter at same time in for loop
-			System.out.printf("%c ", letter);//print out side header of letters
-			for(int c = 0; c < 10; c++){
-				System.out.print(ships[r][c] + " ");//access 2d array and print individual value
-			}
-			System.out.println(); //print \n to create line break between each row
-		}
-	}
 
-
-	/*
-	method to place the ships from point (sRowStart, sColStart) to desired length
-	placeShip requires sRowStart and sColStart to be a value from 0-9 as it
-	considers the first row/col of the board at 0 not 1
-	if vertical is true, it places ship vertically downwards from startpoint
-	if vertical is false, it places ship horizontally to the right from the start
-	point
-	*/
-	public boolean placeShip(int len, int sRowStart, int sColStart, boolean vertical){
-	int sRowEnd, sColEnd;
-		if(vertical){
-			//calculate endpoint if ship is placed downwards
-			sRowEnd = sRowStart + len;
-			sColEnd = sColStart;
-		}
-		else{
-			//calculate endpoint if ship is placed to the left
-			sRowEnd = sRowStart;
-			sColEnd = sColStart + len;
-		}
-		
-		if(len > 5 || len < 2 || sRowEnd < 0 || sColEnd < 0 || sRowEnd > 9 ||sColEnd > 9){
-			return false;
-		}
-		if(vertical){
-			for(int row = sRowStart; row < (sRowStart + len); row++){
-				if(ships[row][sColStart] == 's'){
-					return false;
-				}
-			}
-			//places ship from start point and downwards
-			for(int row = sRowStart; row < (sRowStart + len); row++){
-				ships[row][sColStart] = 's';
-			}
-			return true;
-		}
-		else {
-			for(int col = sColStart; col < (sColStart + len); col++){
-				if(ships[sRowStart][col] == 's'){
-					return false;
-				}
-			}
-			//places ship from start point and to the right
-			for(int col = sColStart; col < (sColStart + len); col++){
-				ships[sRowStart][col] = 's';
-			}
-			return true;
-		}
-	}
+  }
 }
 
