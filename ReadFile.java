@@ -1,7 +1,9 @@
 import java.io.File;  // Import the File class
+import java.io.File;  // Import the File class
 import java.io.FileNotFoundException;  // Import this class to handle errors
 import java.util.ArrayList; // Import the Scanner class to read text files
-import java.util.Scanner; //Import Collections for sorting function
+import java.util.Scanner; 
+import java.util.Collections; 
 
 public class ReadFile {
   public static void main(String[] args) {
@@ -27,15 +29,23 @@ public class ReadFile {
       }
       scanOne.close();
       isFirstLine = true;
+      boolean firstColumn = true;
       //Loop through all data in csv
       while (scanTwo.hasNextLine()) {
+		firstColumn = true;
         String dataTwo = scanTwo.nextLine();
         if(isFirstLine){
           dataTwo = scanTwo.nextLine();
           isFirstLine = false;
         }
-        //Cast String to Integer Wrapper Class
-        libraryStudentBarcodes.add(Integer.parseInt(dataTwo));
+		
+		for(int i = 0; i < dataTwo.length(); i++){
+			if(dataTwo.charAt(i) == '\t' && firstColumn){
+				libraryStudentBarcodes.add(Integer.parseInt(dataTwo.substring(0, i)));
+				firstColumn = false;
+			}
+		}
+		
       }
       int row = 0;
       while (scanTwo.hasNextLine()) {
@@ -66,12 +76,13 @@ public class ReadFile {
 	  System.out.println(libraryStudentBarcodes.get(i));
     }
 
-/*
+
     //Generate User Input for Search Value
     Scanner scan = new Scanner(System.in);
     System.out.print("Please enter a number to search for in the dataset: ");
 
     //Loop to ensure user enters a proper integer value for search value
+    /*
     int search;
     while(true){
       try {
@@ -82,51 +93,58 @@ public class ReadFile {
         System.out.print("Enter a valid integer to search: ");
       }
     }
+    */
     
     System.out.println();
     scan.close();
 
     //need to imagine an imaginary array of possible values which shrinks as we guess values in binary search
+	
+    Collections.sort(studentBarcodes); //sort array
+    
+    for(int iterator = 0; iterator < libraryStudentBarcodes.size(); iterator++){
+		int search = libraryStudentBarcodes.get(iterator);
+		int lowIndex = 0; //lower bound of possible values
+		int highIndex = studentBarcodes.size()-1; //upper bound of possible values
+		boolean isFound = false; //bool flag for if searching value is not in data set
+		int middle, guess, counter = 0;
+		while(highIndex - lowIndex + 1 > 0){ //size of array is greater than zero
+		  counter++;
+		  middle = lowIndex + (highIndex - lowIndex)/2; //set middle to half of possible array plus current lower bound
+		  guess = studentBarcodes.get(middle);
 
-    Collections.sort(listOne); //sort array
-    int lowIndex = 0; //lower bound of possible values
-    int highIndex = listOne.size()-1; //upper bound of possible values
-    boolean isFound = false; //bool flag for if searching value is not in data set
-    int middle, guess, counter = 0;
-    while(highIndex - lowIndex + 1 > 0){ //size of array is greater than zero
-      counter++;
-      middle = lowIndex + (highIndex - lowIndex)/2; //set middle to half of possible array plus current lower bound
-      guess = listOne.get(middle);
+		  //Verbose print commands to show processing
+		  System.out.println("Iteration #" + counter); //implementation of counter for search length
+		  System.out.print("Middle Index: " + middle);
+		  System.out.println("  Middle Value: " + guess);
+		  System.out.println("lowIndex & highIndex Range: (" + lowIndex + ", " + highIndex + ")\n");
 
-      //Verbose print commands to show processing
-      System.out.println("Iteration #" + counter); //implementation of counter for search length
-      System.out.print("Middle Index: " + middle);
-      System.out.println("  Middle Value: " + guess);
-      System.out.println("lowIndex & highIndex Range: (" + lowIndex + ", " + highIndex + ")\n");
+		  //check if guess is right
+		  if(guess == search){
+			System.out.println("Found: " + guess);
+			isFound = true;
+			break;
+		  }
 
-      //check if guess is right
-      if(guess == search){
-        System.out.println("Found: " + guess);
-        isFound = true;
-        break;
-      }
+		  //guess too high then adjust upper bound
+		  else if(guess > search){
+			highIndex = middle - 1;
+		  }
 
-      //guess too high then adjust upper bound
-      else if(guess > search){
-        highIndex = middle - 1;
-      }
+		  //guess too low then adjust lower bound
+		  else if(guess < search){
+			lowIndex = middle + 1;
+		  }
+		}
 
-      //guess too low then adjust lower bound
-      else if(guess < search){
-        lowIndex = middle + 1;
-      }
-    }
+		//Handling if inputted number is not in csv
+		if(!isFound) System.out.println("Not Found");
+	}
 
-    //Handling if inputted number is not in csv
-    if(!isFound) System.out.println("Not Found");
 
-*/
 
   }
 }
+
+
 
