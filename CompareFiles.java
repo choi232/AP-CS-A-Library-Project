@@ -10,23 +10,25 @@ library book & the past lenders of such library book
 
 import java.io.File;  // Import the File class
 import java.io.FileNotFoundException;  // Import this class to handle errors
-import java.util.ArrayList;
-import java.util.Collections; //Import ArrayList
-import java.util.HashSet; // Import the Scanner class to read text files
-import java.util.Scanner; //Import Collections for sorting function
+import java.util.ArrayList; //Import ArrayList
+import java.util.Collections; //Import Collections
+import java.util.HashSet; // Import HashSet to check for repeats
+import java.util.Scanner; // Import the Scanner class to read text files
 
 
 public class CompareFiles {
   public static void main(String[] args) {
-    //Magic Numbers
+    //Magic Numbers for how many tabs needed to find Title and Check Out Columns
     final int tabsTitle = 21;
     final int tabsCheckOut = 72;
-	  //ArrayList Creation
+    
+    //ArrayList Creation
     ArrayList<Integer> studentBarcodes = new ArrayList<Integer>();
     ArrayList<Integer> libraryStudentBarcodes = new ArrayList<Integer>();
     ArrayList<String> libraryBooks = new ArrayList<String>();
     ArrayList<String> libraryCheckOut = new ArrayList<String>();
     HashSet<Integer> libraryBarcodeSet = new HashSet<>();
+	  
     //try catch blocks
     try {
 
@@ -37,9 +39,10 @@ public class CompareFiles {
       Scanner scanTwo = new Scanner(fileTwo);
       boolean isFirstLine = true;
 
-      //First Loop for studentBarcodes
+      //First Loop for studentBarcodes to add integers into ArrayList from csv file
       while (scanOne.hasNextLine()) {
         String dataOne = scanOne.nextLine();
+	//Checks for first column title and skips over it to get to the barcode integers
         if(isFirstLine){
           dataOne = scanOne.nextLine();
           isFirstLine = false;
@@ -55,6 +58,7 @@ public class CompareFiles {
       //Second Loop for libraryStudentBarcodes & libraryBooks
       while (scanTwo.hasNextLine()) {
         String dataTwo = scanTwo.nextLine();
+	//Checks for first column title and skips over it to get to the barcode integers
         if(isFirstLine){
           dataTwo = scanTwo.nextLine();
           isFirstLine = false;
@@ -63,16 +67,19 @@ public class CompareFiles {
         int startIndex = -1;
         for(int i = 0, len = dataTwo.length(); i < len; i++){
           boolean onTab;
+	  //set boolean onTab true or false depending on if each character in file line is a tab
           if(dataTwo.charAt(i) == '\t') onTab = true;
           else onTab = false;
 
-          if(onTab) tabCount++;
+          if(onTab) tabCount++; //increment tabCount when find a tab
           if(tabCount == 1 && onTab){
             //Hash Table to achieve O(1) when comparing if the barcode is not used before compared to looping through entire array O(n)
             int barcode = Integer.parseInt(dataTwo.substring(0, i));
+	    //check if hash code of barcode matches the ArrayList of barcodes already existing
+	    //if there are not repeats of barcode then add it to the ArrayList
             if(!libraryBarcodeSet.contains(barcode))  libraryStudentBarcodes.add(barcode);
           }
-      
+
           if(tabCount == tabsTitle && onTab) startIndex = i+1;
           if(tabCount == tabsTitle+2 && onTab) libraryBooks.add(dataTwo.substring(startIndex, i).replace('\t', ' '));
 
