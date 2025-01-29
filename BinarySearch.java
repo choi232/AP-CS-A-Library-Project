@@ -1,7 +1,7 @@
 /*
 Author: Mikael Choi
 
-Implementation of Binary Search to 
+Purpose: Implementation of Binary Search to 
 look for the user inputted value within
 the StudenBarcodeIDS.csv file
 */
@@ -14,7 +14,7 @@ import java.util.Scanner; //Import Collections for sorting function
 
 public class BinarySearch {
   public static void main(String[] args) {
-	//ArrayList Creation
+    //ArrayList Creation
     ArrayList<Integer> listOne = new ArrayList<Integer>();
     ArrayList<ArrayList<String>> listTwo = new ArrayList<ArrayList<String>>();
     ArrayList<Integer> listLibrary = new ArrayList<Integer>();
@@ -35,21 +35,15 @@ public class BinarySearch {
       }
       scanOne.close();
     } 
+    //If File is not found dont crash the program just throw error
     catch (FileNotFoundException e) {
       System.out.println("An error occurred.");
       e.printStackTrace();
     }
+    //Prints out if parseInt comes across an invalid string for parsing
     catch(NumberFormatException e){
       System.out.println("Not a valid integer: " + e);
     }
-    
-    for(int i = 0; i < listTwo.size(); i++){
-      for(int j = 0; j < listTwo.get(i).size(); j++){
-        System.out.print(listTwo.get(i).get(j) + "\t");
-      }
-      System.out.println();
-    }
-
 
     //Generate User Input for Search Value
     Scanner scan = new Scanner(System.in);
@@ -57,11 +51,14 @@ public class BinarySearch {
 
     //Loop to ensure user enters a proper integer value for search value
     int search;
+    //creates an infinite loop which only breaks when user-input is a valid number
     while(true){
+      //while in loop use try and catch to find if 
       try {
         search = Integer.parseInt(scan.nextLine());
         break;
       } 
+      //if Integer parseInt returns a number format exception error then prompt for a valid integer again
       catch (NumberFormatException e) {
         System.out.print("Enter a valid integer to search: ");
       }
@@ -108,7 +105,6 @@ public class BinarySearch {
 
     //Handling if inputted number is not in csv
     if(!isFound) System.out.println("Not Found");
-
 
   }
 }
