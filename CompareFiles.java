@@ -1,9 +1,11 @@
 /*
 Author: Mikael Choi
 
-Cross Comparison of StudentBarcode.csv & library.txt to find
+Purpose: Cross Comparison of StudentBarcode.csv & library.txt to find
 same barcodes and return these barcodes as well as the corresponding
 library book & the past lenders of such library book
+
+Please note this will print matching student barcodes as well as accessory informations such as titles of book loaned as well as past lenders of the library book
 
 **Must Run In VS-Code because Geany limits computing capabilities
 */
@@ -15,10 +17,13 @@ import java.util.Collections; //Import Collections
 import java.util.HashSet; // Import HashSet to check for repeats
 import java.util.Scanner; // Import the Scanner class to read text files
 
-
+/*
+Compare Files Class as a single file to run entire program from main
+*/
 public class CompareFiles {
+  //Main function to run entire program
   public static void main(String[] args) {
-    //Magic Numbers for how many tabs needed to find Title and Check Out Columns
+    //Labeled variables for how many tabs needed to find Title and Check Out Columns
     final int tabsTitle = 21;
     final int tabsCheckOut = 72;
     
@@ -79,26 +84,26 @@ public class CompareFiles {
 	    //if there are not repeats of barcode then add it to the ArrayList
             if(!libraryBarcodeSet.contains(barcode))  libraryStudentBarcodes.add(barcode);
           }
+ 	  //Checks if current element is a tab and at TITLE column if so will add Title information into libraryBooks ArrayList
+          if(tabCount == tabsTitle && onTab) startIndex = i+1; //sets beginning of string for Title string
+          if(tabCount == tabsTitle+2 && onTab) libraryBooks.add(dataTwo.substring(startIndex, i).replace('\t', ' ')); //assumes is on end of Title at this element and adds Title Information to ArrayList
 
-          if(tabCount == tabsTitle && onTab) startIndex = i+1;
-          if(tabCount == tabsTitle+2 && onTab) libraryBooks.add(dataTwo.substring(startIndex, i).replace('\t', ' '));
-
-
-          if(tabCount == tabsCheckOut && onTab) startIndex = i+1;
-          if(tabCount == tabsCheckOut+1 && onTab){
-            String people = "";
-            String[] strArray = dataTwo.substring(startIndex, i).split(";");
-            for(int k = 0; k < strArray.length; k+=2){
-              if(strArray[k].length() > 0 && k != ((strArray.length/2 - 1)*2) && Character.isAlphabetic(strArray[k].charAt(0))) people += strArray[k] + "; ";
-              else if (strArray[k].length() > 0 && Character.isAlphabetic(strArray[k].charAt(0))) people += strArray[k];
+	  //Checks if current element is a tab and at CHECK OUT column if so will add Check Out information into libraryBooks ArrayList
+          if(tabCount == tabsCheckOut && onTab) startIndex = i+1; //sets beginning of string for Check Out String
+          if(tabCount == tabsCheckOut+1 && onTab){ //assumes is on end of Check Out String and uses parsing logic to add necessary information to Array List
+            String people = ""; //string for final parsed data
+            String[] strArray = dataTwo.substring(startIndex, i).split(";"); //create array of strings using replace with ';' delimiter
+            for(int k = 0; k < strArray.length; k+=2){ //iterate through strArray using even indices due to string format of check out text
+              if(strArray[k].length() > 0 && k != ((strArray.length/2 - 1)*2) && Character.isAlphabetic(strArray[k].charAt(0))) people += strArray[k] + "; "; //checks if first letter is alphabetic of string to determine if is person because names are only ones with alphabetic start in string
+              else if (strArray[k].length() > 0 && Character.isAlphabetic(strArray[k].charAt(0))) people += strArray[k]; //if final name to be added just add without semi colon 
             }
-            libraryCheckOut.add(people);
+            libraryCheckOut.add(people); // add to ArrayList
           }
         }
       }
       scanTwo.close();
     } 
-    catch (FileNotFoundException e) {
+    catch (FileNotFoundException e) { //catch any issues with files not being able to be found
       System.out.println("An error occurred.");
       e.printStackTrace();
     }
@@ -121,7 +126,9 @@ public class CompareFiles {
 
         //check if guess is right
         if(guess == search){
+	  //print out corresponding ArrayList Values and Matching Barcodes
           System.out.println("Found: " + guess);
+	  //Disable following three lines of code if only want matches because following code prints out library books checked out and people who checked them out with corresponding barcode
           System.out.println("Title: " + libraryBooks.get(iterator));
           if(libraryCheckOut.get(iterator).length() != 0) System.out.println("Past Lenders: " + libraryCheckOut.get(iterator) + "\n");
           else System.out.println();
@@ -138,7 +145,7 @@ public class CompareFiles {
         
       }
 	  }
-
+    //Print out total matches using matches counter after for loop is done running
     System.out.println("Total Matches: " + matches);
 
 
